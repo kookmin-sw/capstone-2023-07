@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      
+  react-node-app-with-mysql:
+    image: pinkbean
+    container_name: react-node-app
+    restart: always
+    ports:
+      - 3000:3000
+    extra_hosts:
+      - host.docker.internal:host-gateway 
+    volumes:
+      - ./react-nodejs-docker:/app
