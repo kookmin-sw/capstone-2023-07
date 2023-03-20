@@ -1,77 +1,29 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=10359230&assignment_repo_type=AssignmentRepo)
-# Welcome to GitHub
+2023년 7조  https://kookmin-sw.github.io/capstone-2023-07/
 
-캡스톤 팀 생성을 축하합니다.
+### ◆ 프로젝트 소개
 
-## 팀소개 및 페이지를 꾸며주세요.
+‘Pink Bean’은 ‘메이플스토리’의 종합 검색 플랫폼으로, 캐릭터의 전적 검색, 아이템 기댓값, 각종 컨텐츠 공략, 기타 편의를 제공하고 있습니다. 메이플스토리란 게임은 유저에게 제공하는 정보가 상당히 불친절한 게임입니다. 때문에 유저들은 현재 자신의 캐릭터가 어느 정도 성능에 위치하는지, 지금 캐릭터 성능으로 어떤 컨텐츠를 즐길 수 있는지 알 수 없으며, 이런 정보의 불친절함에서 유저들끼리의 분쟁이 빈번히 발생합니다.
 
-- 프로젝트 소개
-  - 프로젝트 설치방법 및 데모, 사용방법, 프리뷰등을 readme.md에 작성.
-  - Api나 사용방법등 내용이 많을경우 wiki에 꾸미고 링크 추가.
+유저의 성능이 과거보다 현재가 더 안좋을지라도, 유저들이 확인할 수 있는 정보는 오직 과거의 정보만 확인할 수 있습니다. 또한, 서로 다른 46개 캐릭터별로 능력치의 편차가 심해 비교가 거의 불가능에 가깝습니다.
 
-- 팀페이지 꾸미기
-  - 프로젝트 소개 및 팀원 소개
-  - index.md 예시보고 수정.
+유저의 성능이 과거보다 현재가 더 안좋을지라도, 유저들이 확인할 수 있는 정보는 오직 과거의 정보만 확인할 수 있습니다. 또한, 서로 다른 46개 캐릭터별로 능력치의 편차가 심해 비교가 거의 불가능에 가깝습니다.
 
-- GitHub Pages 리파지토리 Settings > Options > GitHub Pages 
-  - Source를 marster branch
-  - Theme Chooser에서 태마선택
-  - 수정후 팀페이지 확인하여 점검.
+때문에 저희는 현재 캐릭터의 성능을 확인할 수 있는 지표를 만들어 유저들의 분쟁을 줄이고, 나아가 이런 정보 및 공략을 담을 수 있는 사이트를 만들고자 합니다.
 
-**팀페이지 주소** -> https://kookmin-sw.github.io/ '{{자신의 리파지토리 아이디}}'
+### ◆ 주요 기능
 
-**예시)** 2023년 0조  https://kookmin-sw.github.io/capstone-2023-00/
+때문에 저희는 현재 캐릭터의 성능을 확인할 수 있는 지표를 만들어 유저들의 분쟁을 줄이고, 나아가 이런 정보 및 공략을 담을 수 있는 사이트를 만들고자 합니다.
 
+### ◆ 팀 소개
 
-## 내용에 아래와 같은 내용들을 추가하세요.
+팀장: 김범준(2019****) |  팀장 및 전반적인 개발
 
-### 1. 프로잭트 소개
+팀원: 조인영(2020****) |  기획 및 디자인
 
-프로젝트
+### ◆ 사용법
 
-### 2. 소개 영상
+DockerImage 폴더에서 Image 다운로드 build 후 실행 (준비중)
 
-프로젝트 소개하는 영상을 추가하세요
+### ◆ 기타
 
-### 3. 팀 소개
-
-팀을 소개하세요.
-
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
-
-### 4. 사용법
-
-소스코드제출시 설치법이나 사용법을 작성하세요.
-
-### 5. 기타
-
-추가적인 내용은 자유롭게 작성하세요.
-
-
-## Markdown을 사용하여 내용꾸미기
-
-Markdown은 작문을 스타일링하기위한 가볍고 사용하기 쉬운 구문입니다. 여기에는 다음을위한 규칙이 포함됩니다.
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-자세한 내용은 [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Support or Contact
-
-readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
+준비중
