@@ -19,3 +19,5 @@ services:
       - host.docker.internal:host-gateway 
     volumes:
       - ./react-nodejs-docker:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
