@@ -9,10 +9,14 @@ body {
 
     background: #FCE4E4;
 }
-.githubpage-body {
+.githubpage-container {
     margin: 0 auto;
     width: 660px;
     height: auto;
+    padding: 50px 50px;
+    
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 .header-horn {
     display: flex;
@@ -102,8 +106,39 @@ body {
 }
 
 @font-face {
-  font-family: 'Maplestory';
-  src: './fonts/Maplestory Light.ttf' format('woff');
-  font-weight: normal;
-  font-style: normal;
+    font-family: 'Maplestory';
+    src: url('./fonts/Maplestory\ Light.ttf') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+@font-face {
+    font-family: 'NanumGothic';
+    src: url('./fonts/NanumGothic.woff')  format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.container-title {
+    font-family: 'Maplestory';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 27px;
+    padding-bottom: 15px;
+}
+
+.container-body {
+    font-family: 'NanumGothic';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 25px;
+
+    letter-spacing: 0.1em;
+    text-indent: 10px;
+    font-feature-settings: 'pcap' on;
+
+    color: #000000;
+    margin-bottom: 26px;
 }
