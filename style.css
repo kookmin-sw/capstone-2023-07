@@ -129,6 +129,10 @@ body {
 }
 
 .container-body {
+    margin-bottom: 26px;
+}
+
+.text {
     font-family: 'NanumGothic';
     font-style: normal;
     font-weight: 400;
@@ -137,8 +141,38 @@ body {
 
     letter-spacing: 0.1em;
     text-indent: 10px;
-    font-feature-settings: 'pcap' on;
 
     color: #000000;
-    margin-bottom: 26px;
+}
+
+
+img {
+    max-width: 100%;
+}
+
+.introduce-img {
+}
+
+.introduce-img img {
+    width: 407px;
+    margin: auto;
+    display: block;
+}
+
+.sub-text {
+    text-align: center;
+
+    font-family: 'NanumGothic';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 25px;
+    /* or 250% */
+
+    letter-spacing: 0.1em;
+    text-indent: 10px;
+
+    /* margin: 12px 0; */
+
+    color: #000000;
 }
