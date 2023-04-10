@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "client": "cd client && npm start",
-    "server": "cd server && node server.js",
+    "server": "cd server && node app.js",
     "dev": "concurrently --kill-others-onfail \"yarn server\" \"yarn client\""
   },
   "dependencies": {
