@@ -1,19 +1,8 @@
 const router = require("express").Router();
 const controller = require("./controller");
 
-router.get("/", controller.main);
+router.get("/test", controller.main);
 
-/**
-* @swagger
-* paths:
-*  /test:
-*   get:
-*     tags: [API test]
-*     summary: API test
-*     responses:
-*       "200":
-*         description: TEST성공
-*/
-router.get("/test", controller.test);
+router.post("/crawling", controller.crawling);
 
 module.exports = router;
