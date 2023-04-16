@@ -1,7 +1,7 @@
-const crawling = require('../src/models/crawling')
+const { ranking } = require('../src/models/crawling')
 
 let main = function (req, res) {
     res.end("200 OK")
 }
 
-module.exports = { main, crawling };
+module.exports = { main, ranking };
