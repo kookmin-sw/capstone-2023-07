@@ -33,10 +33,10 @@ const options = {
                     }
                 }
             },
-            "/crawling" : {
+            "/update" : {
                 post: {
                     tags: ["crawling"],
-                    summary: "crawling test",
+                    summary: "update test",
                     requestBody: {
                         content: {
                             "application/json": {

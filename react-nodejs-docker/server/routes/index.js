@@ -4,6 +4,6 @@ const controller = require("./controller");
 router.get("/", controller.main);
 router.get("/test", controller.test);
 
-router.post("/crawling", controller.ranking);
+router.post("/update", controller.update);
 
 module.exports = router;

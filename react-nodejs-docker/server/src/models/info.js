@@ -19,7 +19,7 @@ const Charinfo = {
         rank_word:'',
         date:''
     },
-    mureung: {
+    dojang: {
         floor:'',
         time:'',
         rank:'',
@@ -28,9 +28,9 @@ const Charinfo = {
     },
     achievements: {
         grade:'',
+        image:'',
         points:'',
         rank:'',
-        rank_word:'',
         date:''
     },
     union: {
