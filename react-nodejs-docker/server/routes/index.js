@@ -5,5 +5,6 @@ router.get("/", controller.main);
 router.get("/test", controller.test);
 
 router.post("/update", controller.update);
+router.post("/isUser", controller.isUser);
 
 module.exports = router;

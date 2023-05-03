@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const { update } = require('../../routes/controller');
-const { Charinfo, Word} = require('./info')
+const { Charinfo, Word, NumToWord} = require('./info')
 
 var startBrowser = async() => {
   const browser = await puppeteer.launch({headless: false, args: ['--disable-notifications'] });
@@ -21,10 +21,15 @@ var searchRankings = async(browser, name, charInfo) => {
   
   const img = await page.$('.search_com_chk .char_img img')
   const charImage = await img.evaluate(element => element.src.replace('Character\/180', 'Character'))
-  var info = await page.$$eval('.search_com_chk td', el => el.map(e => e.textContent.replace(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\n ]/gi,'')))
-
-  charInfo.guild = info[info.length - 1]
+  var [a,b,lv,d,e,guild] = await page.$$eval('.search_com_chk td', el => el.map(e => e.textContent.replace(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\n ]/gi,'')))
+  var[job] = await page.$$eval('.search_com_chk .left dd', el => el.map(e => e.textContent.replace(/\s/g,'')))
+  var[server] = await page.$$eval('.search_com_chk .left dt img', el => el.map(e => e.src))
+  server = "" + (Number(server.split('/icon_')[1].replace(/[^0-9]/gi, '')) - 1)
+  charInfo.guild = guild
+  charInfo.level = lv.replace(/[^0-9]/gi, '')
   charInfo.image = charImage
+  charInfo.job = job
+  charInfo.server = NumToWord[server]
 }
 
 var searchInfo = async(browser, charInfo) => {
@@ -53,7 +58,7 @@ var searchInfo = async(browser, charInfo) => {
     })
     return info
   });
-  charInfo.level = cinfo[0]
+  charInfo.level = cinfo[0].replace(/[^0-9]/gi, '')
   charInfo.job = cinfo[1]
   charInfo.server = cinfo[2]
   charInfo.rank.rank_all = cinfo[3].replace(/[^0-9]/gi, '')
@@ -148,7 +153,7 @@ var searchSeed = async (browser, charInfo) => {
 
 var searchDojang = async (browser, charInfo) => {
     var [page] = await browser.pages();
-    lv = Number(charInfo.level.replace(/[^0-9]/gi, '')) > 200 ? "2" : "0"
+    lv = Number(charInfo.level) > 200 ? "2" : "0"
     
     await page.goto('https://maplestory.nexon.com/N23Ranking/Contents/Dojang?c=' + charInfo['name'] + "&t=" + lv);
     var [rank] = await page.$$eval('.search_com_chk td p', el => el.map(e => e.textContent.replace(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"\n ]/gi,'')))
@@ -171,12 +176,6 @@ var crawling = async(username) => {
   var charInfo = {...Charinfo}
   charInfo['name'] = username
   var state = 200
-  var update = { 
-        union: true,
-        seed: true,
-        mureung: true,
-        achievements: true
-    }
   try {
     await searchRankings(browser, username, charInfo)
   }
@@ -202,7 +201,6 @@ var crawling = async(username) => {
   catch (err) {
     console.log("err: searchUnion not found")
     console.log(err)
-    update.union = false
   }
 
   try {
@@ -219,7 +217,6 @@ var crawling = async(username) => {
   catch (err) {
     console.log("err: searchAchievements not found")
     console.log(err)
-    update.achievements = false
   }
 
   
@@ -229,7 +226,6 @@ var crawling = async(username) => {
   catch (err) {
     console.log("err: searchSeed not found")
     console.log(err)
-    update.seed = false
   }
 
   try {
@@ -238,17 +234,34 @@ var crawling = async(username) => {
   catch (err) {
     console.log("err: searchSeed not found")
     console.log(err)
-    update.mureung = false
   }
 
   if(browser) browser.close()
-  return { state, update, charInfo }
+  return { state, charInfo }
 }
 
+var isUser = async(username) => {
+  const browser = await startBrowser()
+  var charInfo = {...Charinfo}
+  charInfo['name'] = username
+  var state = 200
+  
+  try {
+    await searchRankings(browser, username, charInfo)
+  }
+  catch (err) {
+    console.log("err: searchRankings not found")
+    console.log(err)
+    state = 404
+  }
+  browser.close()
+  return { state, charInfo }
+}
 
 function delay(time) {
   return new Promise(function(resolve) { 
       setTimeout(resolve, time)
   });
 }
-module.exports = { crawling }
+
+module.exports = { crawling, isUser }

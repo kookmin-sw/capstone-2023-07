@@ -16,6 +16,9 @@ const options = {
         },
         servers: [
             {
+                url: "http://dev.pinkbean.kr:8001/",
+            },
+            {
                 url: "http://localhost:8001/",
             },
         ],
@@ -37,6 +40,29 @@ const options = {
                 post: {
                     tags: ["crawling"],
                     summary: "update test",
+                    requestBody: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: '#/definitions/name'
+                                }
+                            }
+                        }
+                    },
+                    responses: {
+                        200: {
+                            description: "success"
+                        },
+                        404: {
+                            description: "failed"
+                        }
+                    }
+                }
+            },
+            "/isUser" : {
+                post: {
+                    tags: ["user"],
+                    summary: "get user",
                     requestBody: {
                         content: {
                             "application/json": {

@@ -6,6 +6,7 @@ let main = function (req, res) {
 }
 
 const update = view.updateCharacter
+const isUser = view.isUser
 
 
-module.exports = { main, test, update };
+module.exports = { main, test, update, isUser };
