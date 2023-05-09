@@ -31,6 +31,38 @@ var searchRankings = async(browser, name, charInfo) => {
   charInfo.job = job
   charInfo.server = NumToWord[server]
 }
+var searchItem = async(browser) => {
+  await delay(500)
+  const [a, page] = await browser.pages();
+  
+  var [rankInfo] = await page.$x("//a[contains(text(), '"+ '장비' +"')]");
+  if (rankInfo) await rankInfo.click();
+  await delay(500)
+  
+  const imgs = await page.$$('.tab01_con_wrap .item_pot li > img')
+  for(let i = 0; i < imgs.length; i++) {
+    await imgs[i].click()
+    item = {}
+    var title = await page.$('.tab01_con_wrap .item_memo .item_memo_title h1')
+    item.title = await title.evaluate(element => element.textContent.replace(/\s/g,''))
+    var info = await page.$$('.tab01_con_wrap .stet_info ul li')
+    for(var j = 0; j < info.length; j ++) {
+      var [stet, point] = await info[j].$$('div')
+      stet = await stet.evaluate(element => element.textContent.replace(/\s/g,''))
+      point = await point.evaluate(element => element.innerText.replace(/\n/g, '\/'))
+      if (stet.includes('잠재옵션')) {
+        var opt = point.split('\/')
+        for(var k = 0; k < opt.length; k++) {
+          [stet, point] = opt[k].split(':')
+          console.log(stet,':', point)
+        }
+        continue
+      }
+      console.log(stet, ':', point)
+    }
+    console.log("\n")
+  }
+}
 
 var searchInfo = async(browser, charInfo) => {
   await delay(500)
@@ -171,6 +203,32 @@ var searchDojang = async (browser, charInfo) => {
     charInfo.dojang.time = time
 }
 
+var crawlingItem = async(username) => { 
+  const browser = await startBrowser()
+  var charInfo = {...Charinfo}
+  charInfo['name'] = username
+  var state = 200
+  try {
+    await searchRankings(browser, username, charInfo)
+  }
+  catch (err) {
+    browser.close()
+    console.log("err: searchRankings not found")
+    console.log(err)
+    state = 404
+  }
+  try {
+    await searchItem(browser)
+  }
+  catch (err) {
+    browser.close()
+    console.log("err: searchItem not found")
+    console.log(err)
+    state = 404
+  }
+  if(browser) browser.close()
+  return { state }
+}
 var crawling = async(username) => {
   const browser = await startBrowser()
   var charInfo = {...Charinfo}
@@ -219,7 +277,6 @@ var crawling = async(username) => {
     console.log(err)
   }
 
-  
   try {
     await searchSeed(browser, charInfo)
   }
@@ -232,7 +289,7 @@ var crawling = async(username) => {
     await searchDojang(browser, charInfo)
   }
   catch (err) {
-    console.log("err: searchSeed not found")
+    console.log("err: searchDojang not found")
     console.log(err)
   }
 
@@ -254,7 +311,7 @@ var isUser = async(username) => {
     console.log(err)
     state = 404
   }
-  browser.close()
+  if(browser)browser.close()
   return { state, charInfo }
 }
 
@@ -264,4 +321,5 @@ function delay(time) {
   });
 }
 
-module.exports = { crawling, isUser }
+
+module.exports = { crawling, isUser, crawlingItem }

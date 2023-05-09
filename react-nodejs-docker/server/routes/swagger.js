@@ -16,10 +16,10 @@ const options = {
         },
         servers: [
             {
-                url: "http://dev.pinkbean.kr:8001/",
+                url: "http://localhost:8001/",
             },
             {
-                url: "http://localhost:8001/",
+                url: "http://dev.pinkbean.kr:8001/",
             },
         ],
         
@@ -37,6 +37,29 @@ const options = {
                 }
             },
             "/update" : {
+                post: {
+                    tags: ["crawling"],
+                    summary: "update test",
+                    requestBody: {
+                        content: {
+                            "application/json": {
+                                schema: {
+                                    $ref: '#/definitions/name'
+                                }
+                            }
+                        }
+                    },
+                    responses: {
+                        200: {
+                            description: "success"
+                        },
+                        404: {
+                            description: "failed"
+                        }
+                    }
+                }
+            },
+            "/updateItem" : {
                 post: {
                     tags: ["crawling"],
                     summary: "update test",

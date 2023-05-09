@@ -22,6 +22,11 @@ const updateCharacter = async (req, res) => {
     res.json({ state:'succsess' })
 }
 
+const updateItem = async(req, res) => {
+    await crawling.crawlingItem(req.body.username)
+    res.json({ state:'succsess' })
+}
+
 const isUser = async (req, res) => {
     let charInfo = {...Charinfo}
     const user = await connection.getUser(req.body.username)
@@ -54,4 +59,4 @@ function getToday(){
     return year + month + day;
 }
 
-module.exports = { updateCharacter, isUser }
+module.exports = { updateCharacter, isUser, updateItem }
