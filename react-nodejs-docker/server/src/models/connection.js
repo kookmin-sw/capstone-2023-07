@@ -24,11 +24,13 @@ let getUser = async(username) => {
     const conn = await getConn();
     let charInfo = {...Charinfo}
     let state = 200
+    let sql = ``
+    let params = [username]
     try {
-        var [rows] = await conn.query("SELECT * FROM user WHERE name = ?;", [username])
-        console.log(rows)
-        if (rows.length != 1) state = 404
+        sql = "SELECT * FROM user WHERE name = ?;"
         
+        var [rows] = await conn.query(sql, params)
+        if (rows.length != 1) state = 404
         charInfo.name = rows[0].name
         charInfo.level = rows[0].level
         charInfo.job = rows[0].job
@@ -36,11 +38,69 @@ let getUser = async(username) => {
         charInfo.guild = rows[0].guild
         charInfo.image = rows[0].img
         charInfo.date = rows[0].date
+        
+        sql = "select * from capston.rank where name = ? order by idx desc limit 1;"
+        var [rows] = await conn.query(sql, params)
+        if (rows.length == 1)
+        {
+            charInfo.rank.rank_all = rows[0].rank
+            charInfo.rank.rank_word = rows[0].word_rank
+            charInfo.rank.rank_job_all = rows[0].job_rank
+            charInfo.rank.rank_job_word = rows[0].job_word_rank
+        }
+
+        sql = "select * from capston.seed where name = ? order by floor desc, time asc limit 1;"
+        var [rows] = await conn.query(sql, params)
+        if (rows.length == 1) 
+        {
+            charInfo.seed.floor = rows[0].floor
+            charInfo.seed.time = rows[0].time
+            charInfo.seed.rank = rows[0].rank
+            charInfo.seed.rank_word = rows[0].word_rank
+            charInfo.seed.date = rows[0].date
+        }
+
+        
+        sql = "select * from capston.dojang where name = ? order by floor desc, time asc limit 1;"
+        var [rows] = await conn.query(sql, params)
+        if (rows.length == 1) 
+        {
+            charInfo.dojang.floor = rows[0].floor
+            charInfo.dojang.time = rows[0].time
+            charInfo.dojang.rank = rows[0].rank
+            charInfo.dojang.rank_word = rows[0].word_rank
+            charInfo.dojang.date = rows[0].date
+        }
+        
+        sql = "select * from capston.achievements where name = ? order by idx desc limit 1;"
+        var [rows] = await conn.query(sql, params)
+        if (rows.length == 1) 
+        {
+            charInfo.achievements.grade = rows[0].grade
+            charInfo.achievements.points = rows[0].points
+            charInfo.achievements.rank = rows[0].rank
+            charInfo.achievements.image = rows[0].img
+            charInfo.achievements.date = rows[0].date
+        }
+        
+        sql = "select * from capston.union where name = ? order by idx desc limit 1;"
+        var [rows] = await conn.query(sql, params)
+        if (rows.length == 1) 
+        {
+            charInfo.union.grade = rows[0].grade
+            charInfo.union.level = rows[0].level
+            charInfo.union.rank = rows[0].rank
+            charInfo.union.rank_word = rows[0].word_rank
+            charInfo.union.power = rows[0].power
+            charInfo.union.date = rows[0].date
+        }
+
     }
     catch (err) {
         console.log(err)
         state = 404
     }
+    conn.release()
     return { state, charInfo }
 }
 
@@ -58,6 +118,7 @@ let insertUser = async(charInfo) => {
         console.log(err)
         state = 404;
     }
+    conn.release()
     return { state }
 }
 
@@ -109,7 +170,7 @@ let updateUser = async(charInfo) => {
         console.log(err)
         state = 404;
     }
-
+    conn.release()
     return { state }
 
 }
