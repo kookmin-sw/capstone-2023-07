@@ -104,7 +104,43 @@ const options = {
                         }
                     }
                 }
-            }
+            },
+            "/getItems": {
+                get: {
+                    tags: ["user"],
+                    summary: "get items",
+                    parameters: [{
+                        in:'query',
+                        name: 'username',
+                        require: true,
+                        dataType: 'string',
+                        defaultValue: 'None'
+                    }],
+                    responses: {
+                        "200": {
+                            description: "success",
+                        }
+                    }
+                }
+            },
+            "/getItem": {
+                get: {
+                    tags: ["user"],
+                    summary: "get items",
+                    parameters: [{
+                        in:'query',
+                        name: 'item_idx',
+                        require: true,
+                        dataType: 'string',
+                        defaultValue: 'None'
+                    }],
+                    responses: {
+                        "200": {
+                            description: "success",
+                        }
+                    }
+                }
+            },
         },
         definitions: {
             name: {

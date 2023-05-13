@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const { update } = require('../../routes/controller');
-const { Charinfo, Word, NumToWord} = require('./info')
+const { Charinfo, Word, NumToWord, ItmeInfo, ItemOpt} = require('./info')
 
 var startBrowser = async() => {
   const browser = await puppeteer.launch({headless: false, args: ['--disable-notifications'] });
@@ -38,13 +38,29 @@ var searchItem = async(browser) => {
   var [rankInfo] = await page.$x("//a[contains(text(), '"+ '장비' +"')]");
   if (rankInfo) await rankInfo.click();
   await delay(500)
-  
+  var items = []
   const imgs = await page.$$('.tab01_con_wrap .item_pot li > img')
   for(let i = 0; i < imgs.length; i++) {
     await imgs[i].click()
-    item = {}
+    var item = {...ItmeInfo}
+    item.option = {}
+    item.potential = {}
+    item.additional = {}
+    item.soul = {}
+
+    var titleEm = await page.$('.tab01_con_wrap .item_memo .item_memo_title h1 em')
+    titleEm = ((titleEm) ? await titleEm.evaluate(element => element.textContent.replace(/\s/g,'')) : '')
     var title = await page.$('.tab01_con_wrap .item_memo .item_memo_title h1')
-    item.title = await title.evaluate(element => element.textContent.replace(/\s/g,''))
+    title = await title.evaluate(element => element.textContent.replace(/\s/g,''))
+    if (title.includes('(')) title = title.split('(')[0]
+    item.title = title.replace(titleEm, '')
+    item.starForce = Number(titleEm.replace(/[^0-9]/gi, ''))
+    
+    item.img = await imgs[i].evaluate(element => element.src)
+    
+    var part = await page.$$('.tab01_con_wrap .item_ability .ablilty02 .job_name em')
+    item.part = await part[1].evaluate(element => element.textContent.replace(/\s/g,''))
+
     var info = await page.$$('.tab01_con_wrap .stet_info ul li')
     for(var j = 0; j < info.length; j ++) {
       var [stet, point] = await info[j].$$('div')
@@ -52,18 +68,47 @@ var searchItem = async(browser) => {
       point = await point.evaluate(element => element.innerText.replace(/\n/g, '\/'))
       if (stet.includes('잠재옵션')) {
         var opt = point.split('\/')
+        var potential = (stet.includes('에디')) ? 'additional' : 'potential'
         for(var k = 0; k < opt.length; k++) {
           [stet, point] = opt[k].split(':')
-          console.log(stet,':', point)
+          stet = stet.replace(/\s/g,'')
+          var line = itemMakeInfo(stet, point)
+
+          if(ItemOpt[line.stet] == true && line.point != undefined) 
+            (item[potential][line.stet] == undefined)? item[potential][line.stet] = line.point : item[potential][line.stet] += line.point
         }
         continue
       }
-      console.log(stet, ':', point)
-    }
-    console.log("\n")
-  }
-}
+      if (stet.includes('소울옵션')) {
+        var opt = point.split('\/')
+        var [stet, point] = opt[1].split(':')
+        stet = stet.replace(/\s/g,'')
+        var line = itemMakeInfo(stet, point)
+        if(ItemOpt[line.stet] != undefined && line.point != undefined) 
+          (item.soul[line.stet] == undefined) ? item.soul[line.stet] = line.point : item.soul[line.stet] += line.point
 
+      }
+      var line = itemMakeInfo(stet, point)
+      if(ItemOpt[line.stet] != undefined && line.point != undefined) 
+        (item.option[line.stet] == undefined) ? item.option[line.stet] = line.point : item.option[line.stet] += line.point
+    }
+    items.push(item)
+  }
+  return items
+}
+var itemMakeInfo = (stet, point) => {
+  if(!point) return {stet:''}
+  point = point.replace(/\s/g,'')
+  if (point.includes('(')) {
+    point = point.split('(')[0]
+  }
+  if (point.includes('%')) {
+    stet = stet + '%'
+    point = point.replace('%','')
+  }
+  point = point.replace(/[^0-9]/gi, '')
+  return {stet, point:Number(point)}
+}
 var searchInfo = async(browser, charInfo) => {
   await delay(500)
 
@@ -208,6 +253,7 @@ var crawlingItem = async(username) => {
   var charInfo = {...Charinfo}
   charInfo['name'] = username
   var state = 200
+  var items = []
   try {
     await searchRankings(browser, username, charInfo)
   }
@@ -218,7 +264,7 @@ var crawlingItem = async(username) => {
     state = 404
   }
   try {
-    await searchItem(browser)
+     items = await searchItem(browser)  
   }
   catch (err) {
     browser.close()
@@ -227,7 +273,7 @@ var crawlingItem = async(username) => {
     state = 404
   }
   if(browser) browser.close()
-  return { state }
+  return { state, items }
 }
 var crawling = async(username) => {
   const browser = await startBrowser()

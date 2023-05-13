@@ -1,3 +1,28 @@
+.main-header {
+  background-color: #E4BEEE;
+}
+.main-header > div {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 12px
+}
+.main-header div {
+  margin: auto;
+  text-align: center;
+}
+.main-header input {
+  width: 236px;
+  height: 34px;
+
+  background: #C699D6;
+  border: 1px solid #B589C5;
+  border-radius: 10px;
+  margin-right: 24px;
+}
+
 @font-face {
   font-family: 'Maplestory';
   src: './fonts/Maplestory Light.ttf' format('woff');

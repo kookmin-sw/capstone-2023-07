@@ -42,7 +42,45 @@ const Charinfo = {
         date:''
     }
 }
-Word = {
+
+const ItemOpt = {
+    'STR':true,
+    'DEX':true,
+    'LUK':true,
+    'INT':true,
+    'MaxHP':true,
+    '공격력':true,
+    '마력':true,
+    '올스탯%':true,
+    '몬스터방어력무시%':true,
+    '보스몬스터공격시데미지%':true,
+    '데미지%':true,
+    '캐릭터기준9레벨당STR':true,
+    '캐릭터기준9레벨당DEX':true,
+    '캐릭터기준9레벨당LUK':true,
+    '캐릭터기준9레벨당INT':true,
+    'STR%':true,
+    'DEX%':true,
+    'LUK%':true,
+    'INT%':true,
+    '최대HP%':true,
+    '공격력%':true,
+    '마력%':true,
+    '모든스킬의재사용대기시간':true,
+}
+
+const ItmeInfo = {
+    'title':'',
+    'starForce':'',
+    'part':'',
+    'img':'',
+    'option': {},
+    'potential': {},
+    'additional': {},
+    'soul': {}
+}
+
+const Word = {
     '전체월드':'0',
     '리부트2':'1',
     '리부트':'2',
@@ -61,7 +99,7 @@ Word = {
     '리부트 전체':'254'
 }
 
-NumToWord = {
+const NumToWord = {
     '0':'전체월드',
     '1':'리부트2',
     '2':'리부트',
@@ -79,7 +117,7 @@ NumToWord = {
     '14':'노바',
     '254':'리부트전체'
 }
-Job = {
+const Job = {
     '초보자':'0',
     '전사':'1',
     '마법사':'2',
@@ -108,4 +146,4 @@ Job = {
     '칼리':'29',
 
 }
-module.exports = { Charinfo, Word, NumToWord }
+module.exports = { Charinfo, Word, NumToWord, ItmeInfo, ItemOpt }

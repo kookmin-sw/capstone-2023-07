@@ -22,8 +22,35 @@ const updateCharacter = async (req, res) => {
     res.json({ state:'succsess' })
 }
 
+const getItems = async(req, res) => {
+    console.log(req.query)
+    const get = await connection.getItems(req.query.username)
+    if(get.state != 200) {
+        res.status(404).json({state: 'get items failed'})
+        return
+    }
+    res.json({state:'succsess', values:get.items })
+}
+const getItem = async(req, res) => {
+    const get = await connection.getItem(req.query.item_idx)
+    if(get.state != 200) {
+        res.status(404).json({state: 'get items failed'})
+        return
+    }
+    res.json({state:'succsess', values:get.item })
+}
+
 const updateItem = async(req, res) => {
-    await crawling.crawlingItem(req.body.username)
+    const items = await crawling.crawlingItem(req.body.username)
+    if (items.state != 200) {
+        res.status(404).json({state: 'item crawling failed'})
+        return
+    }
+    const update = await connection.updateItem(req.body.username, items.items)
+    if (update.state != 200) {
+        res.status(404).json({state: 'update failed'})
+        return
+    }
     res.json({ state:'succsess' })
 }
 
@@ -59,4 +86,4 @@ function getToday(){
     return year + month + day;
 }
 
-module.exports = { updateCharacter, isUser, updateItem }
+module.exports = { updateCharacter, isUser, updateItem, getItems, getItem }

@@ -17,7 +17,101 @@ const getConn = async() => {
 let test = async(req, res)=>{
     const conn = await getConn();
     let [rows, fileds] = await conn.query("SELECT * FROM test;",[])
+    conn.release()
     res.json({ values:rows })
+}
+
+let getItems = async(username) => {
+    const conn = await getConn();
+    let state = 200
+    let items = []
+
+    try {
+        var sql = `select idx from items where name = ? order by idx desc limit 1;`
+        var [rows] = await conn.query(sql, [username])
+        
+        var sql = 'select * from item where items_idx = ?;'
+        var [rows] = await conn.query(sql, [rows[0].idx])
+
+        items = rows
+
+    }
+    catch (err) {
+        console.log(err)
+        state = 404
+    }
+    return { state, items }
+}
+
+let getItem = async(item_idx) => {
+    const conn = await getConn();
+    let state = 200
+    let item = []
+    try {
+        var sql = `select * from item_option where item_idx = ?;`
+        var [rows] = await conn.query(sql, [item_idx])
+
+        item = rows
+
+    }
+    catch (err) {
+        console.log(err)
+        state = 404
+    }
+    return { state, item }
+}
+
+let updateItem = async(username, items)=>{
+    const conn = await getConn();
+    let state = 200
+    
+    try {
+        var sql = `INSERT INTO capston.items (name) VALUES (?);`
+        var [rows] = await conn.query(sql, [username])
+
+        var sql = `SELECT * FROM capston.items where name = ? order by idx desc limit 1;`
+        var [rows] = await conn.query(sql, [username])
+        var idx = rows[0].idx
+
+        for (var i = 0; i < items.length; i++) {
+            var sql = `INSERT INTO capston.item (items_idx, title, starForce, part, img) VALUES (?, ?, ?, ?, ?);`
+            var params = [idx, items[i].title, items[i].starForce, items[i].part, items[i].img]
+            var [rows] = await conn.query(sql, params)
+
+            var sql = `SELECT * FROM capston.item where items_idx = ? and title = ? order by idx desc;`
+            var params = [idx, items[i].title]
+            var [rows] = await conn.query(sql, params)
+
+            var item_idx = rows[0].idx
+            for (var key in items[i].option) {
+                var sql = `INSERT INTO capston.item_option (item_idx, type, name, option) VALUES (?, ?, ?, ?);`
+                var params = [item_idx, 'option', key, items[i].option[key]]
+                var [rows] = await conn.query(sql, params)
+            }
+            for (var key in items[i].potential) {
+                var sql = `INSERT INTO capston.item_option (item_idx, type, name, option) VALUES (?, ?, ?, ?);`
+                var params = [item_idx, 'potential', key, items[i].potential[key]]
+                var [rows] = await conn.query(sql, params)
+            }
+            for (var key in items[i].additional) {
+                var sql = `INSERT INTO capston.item_option (item_idx, type, name, option) VALUES (?, ?, ?, ?);`
+                var params = [item_idx, 'additional', key, items[i].additional[key]]
+                var [rows] = await conn.query(sql, params)
+            }
+            for (var key in items[i].soul) {
+                var sql = `INSERT INTO capston.item_option (item_idx, type, name, option) VALUES (?, ?, ?, ?);`
+                var params = [item_idx, 'soul', key, items[i].soul[key]]
+                var [rows] = await conn.query(sql, params)
+            }
+        }
+
+    } catch (err) {
+        console.log(err)
+        state = 404
+    }
+
+    conn.release()
+    return { state }
 }
 
 let getUser = async(username) => {
@@ -175,4 +269,6 @@ let updateUser = async(charInfo) => {
 
 }
 
-module.exports = { test, getUser, insertUser, updateUser }
+
+
+module.exports = { test, getUser, insertUser, updateUser, updateItem, getItems, getItem }

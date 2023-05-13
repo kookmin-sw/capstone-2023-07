@@ -1,11 +1,11 @@
 import logo from './logo.svg';
-import Githubpage from "./app/githubpage";
+import Header from "./app/header";
 import './App.css';
 
 function App() {
   return (
-    <Githubpage >
-    </Githubpage>
+    <Header>
+    </Header>
   );
 }
 
