@@ -23,21 +23,20 @@ const updateCharacter = async (req, res) => {
 }
 
 const getItems = async(req, res) => {
-    console.log(req.query)
     const get = await connection.getItems(req.query.username)
     if(get.state != 200) {
         res.status(404).json({state: 'get items failed'})
         return
     }
-    res.json({state:'succsess', values:get.items })
+    res.json({state:'succsess', values:get.items, total:get.total })
 }
 const getItem = async(req, res) => {
-    const get = await connection.getItem(req.query.item_idx)
+    const get = await connection.getItem(req.query.item_idx, req.query.job)
     if(get.state != 200) {
         res.status(404).json({state: 'get items failed'})
         return
     }
-    res.json({state:'succsess', values:get.item })
+    res.json({state:'succsess', values:get.item, total:get.total })
 }
 
 const updateItem = async(req, res) => {

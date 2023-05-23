@@ -133,6 +133,12 @@ const options = {
                         require: true,
                         dataType: 'string',
                         defaultValue: 'None'
+                    },{
+                        in:'query',
+                        name: 'job',
+                        require: true,
+                        dataType: 'string',
+                        defaultValue: 'None'
                     }],
                     responses: {
                         "200": {

@@ -3,7 +3,7 @@ const { update } = require('../../routes/controller');
 const { Charinfo, Word, NumToWord, ItmeInfo, ItemOpt} = require('./info')
 
 var startBrowser = async() => {
-  const browser = await puppeteer.launch({headless: false, args: ['--disable-notifications'] });
+  const browser = await puppeteer.launch({headless: true, args: ['--disable-notifications'] });
   // const browser = await puppeteer.launch();
   return browser;
 }
@@ -39,15 +39,22 @@ var searchItem = async(browser) => {
   if (rankInfo) await rankInfo.click();
   await delay(500)
   var items = []
-  const imgs = await page.$$('.tab01_con_wrap .item_pot li > img')
+  const imgs = await page.$$('.tab01_con_wrap .item_pot > li > img')
   for(let i = 0; i < imgs.length; i++) {
-    await imgs[i].click()
     var item = {...ItmeInfo}
     item.option = {}
     item.potential = {}
     item.additional = {}
     item.soul = {}
+    
+    var alt = await imgs[i].evaluate(element => element.alt)
+    console.log(alt.length)
+    if(!(alt.length > 0)) {
+      items.push(item)
+      continue
+    }
 
+    await imgs[i].click()
     var titleEm = await page.$('.tab01_con_wrap .item_memo .item_memo_title h1 em')
     titleEm = ((titleEm) ? await titleEm.evaluate(element => element.textContent.replace(/\s/g,'')) : '')
     var title = await page.$('.tab01_con_wrap .item_memo .item_memo_title h1')

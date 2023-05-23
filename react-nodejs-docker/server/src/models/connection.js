@@ -25,40 +25,162 @@ let getItems = async(username) => {
     const conn = await getConn();
     let state = 200
     let items = []
-
+    let sum_opt = []
+    var total = 0;
     try {
         var sql = `select idx from items where name = ? order by idx desc limit 1;`
         var [rows] = await conn.query(sql, [username])
-        
+        var items_idx = rows[0].idx
         var sql = 'select * from item where items_idx = ?;'
-        var [rows] = await conn.query(sql, [rows[0].idx])
+        var [rows] = await conn.query(sql, [items_idx])
 
         items = rows
 
+        var sql = `SELECT o.name, sum(o.option) as sum FROM 
+        capston.item i 
+        join item_option o on i.idx = o.item_idx
+        where items_idx = ? group by o.name order by sum desc;`
+        var [rows] = await conn.query(sql, [items_idx])
+        sum_opt = rows
+        
+        var sql = `SELECT job, level FROM capston.user where name = ?;`
+        var [rows] = await conn.query(sql, [username])
+        var job = rows[0].job.split('\/')[1]
+        var level = rows[0].level
+
+        var sql = `SELECT stat, att FROM capston.job where job = ?;`
+        var [rows] = await conn.query(sql, [job])
+        var stat = rows[0]
+        validOption = stat.stat.split(',')
+        for(var i in sum_opt) {
+            if(sum_opt[i].name == validOption[0]) {
+                total += Number(sum_opt[i].sum)
+            }
+            if(sum_opt[i].name == validOption[1]) {
+                total += Number(sum_opt[i].sum) * 0.1
+            }
+            if(validOption.length > 2 && sum_opt[i].name == validOption[2]) {
+                total += Number(sum_opt[i].sum) * 0.1
+            }
+            if(sum_opt[i].name == validOption[0] +'%') {
+                total += Number(sum_opt[i].sum) * 10
+            }
+            if(sum_opt[i].name == stat.att) {
+                total += Number(sum_opt[i].sum) * 4
+            }
+            if(sum_opt[i].name  == stat.att + '%') {
+                total += Number(sum_opt[i].sum) * 45
+            }
+            if(sum_opt[i].name.includes('보스몬스터')) {
+                total += Number(sum_opt[i].sum) * 15
+            }
+            if(sum_opt[i].name == '크리티컬데미지%') {
+                total += Number(sum_opt[i].sum) * 40
+            }
+            if(sum_opt[i].name == '데미지%') {
+                total += Number(sum_opt[i].sum) * 15
+            }
+            if(sum_opt[i].name.includes('올스탯')) {
+                total += Number(sum_opt[i].sum) * 11
+            }
+            if(sum_opt[i].name.includes('방어력')) {
+                total += Number(sum_opt[i].sum) * 12
+            }
+            if(sum_opt[i].name.includes('캐릭터기준') && sum_opt[i].name.includes(validOption[0])) {
+                total += Number(sum_opt[i].sum) * Math.floor(level / 9)
+            }
+        }
+        total = Math.round(total)
+        total = ('' + total).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     }
     catch (err) {
         console.log(err)
         state = 404
     }
-    return { state, items }
+    
+    conn.release()
+    return { state, items, total }
 }
 
-let getItem = async(item_idx) => {
+let getItem = async(item_idx, job) => {
     const conn = await getConn();
     let state = 200
     let item = []
+    let res = []
+    let total = 0
     try {
         var sql = `select * from item_option where item_idx = ?;`
         var [rows] = await conn.query(sql, [item_idx])
 
         item = rows
 
+        var job_ = job.split('\/')[1]
+
+        var sql = `SELECT stat, att FROM capston.job where job = ?;`
+        var [rows] = await conn.query(sql, [job_])
+        var stat = rows[0]
+        validOption = stat.stat.split(',')
+        
+        for(var i in item) {
+            if(item[i].name == validOption[0]) {
+                total += Number(item[i].option)
+                res.push(item[i])
+            }
+            if(item[i].name == validOption[1]) {
+                total += Number(item[i].option) * 0.25
+                res.push(item[i])
+            }
+            if(validOption.length > 2 && item[i].name == validOption[2]) {
+                total += Number(item[i].option) * 0.1
+                res.push(item[i])
+            }
+            if(item[i].name == validOption[0]+'%') {
+                total += Number(item[i].option) * 10
+                res.push(item[i])
+            }
+            if(item[i].name == stat.att) {
+                total += Number(item[i].option) * 4
+                res.push(item[i])
+            }
+            if(item[i].name == stat.att +'%') {
+                total += Number(item[i].option) * 45
+                res.push(item[i])
+            }
+            if(item[i].name.includes('보스몬스터')) {
+                total += Number(item[i].option) * 15
+                res.push(item[i])
+            }
+            if(item[i].name == '데미지%') {
+                total += Number(item[i].option) * 15
+                res.push(item[i])
+            }
+            if(item[i].name == '크리티컬데미지%') {
+                total += Number(item[i].option) * 40
+                res.push(item[i])
+            }
+            if(item[i].name.includes('올스탯')) {
+                total += Number(item[i].option) * 11
+                res.push(item[i])
+            }
+            if(item[i].name.includes('몬스터방어')) {
+                total += Number(item[i].option) * 12
+                res.push(item[i])
+            }
+            if(item[i].name.includes('캐릭터기준') && item[i].name.includes(validOption[0])) { 
+                total += Number(item[i].option) * Math.floor(300 / 9)
+                res.push(item[i])
+            }
+        }
+        total = Math.round(total)
+        total = ('' + total).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
     catch (err) {
         console.log(err)
         state = 404
     }
-    return { state, item }
+    
+    conn.release()
+    return { state, item:res, total }
 }
 
 let updateItem = async(username, items)=>{
@@ -121,37 +243,50 @@ let getUser = async(username) => {
     let sql = ``
     let params = [username]
     try {
-        sql = "SELECT * FROM user WHERE name = ?;"
+        sql = "SELECT * , datediff(now(), date) as diff_date FROM user WHERE name = ?;"
         
         var [rows] = await conn.query(sql, params)
         if (rows.length != 1) state = 404
         charInfo.name = rows[0].name
-        charInfo.level = rows[0].level
+        charInfo.level = rows[0].level.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         charInfo.job = rows[0].job
         charInfo.server = rows[0].server
         charInfo.guild = rows[0].guild
         charInfo.image = rows[0].img
-        charInfo.date = rows[0].date
+        charInfo.date = rows[0].diff_date
         
         sql = "select * from capston.rank where name = ? order by idx desc limit 1;"
         var [rows] = await conn.query(sql, params)
         if (rows.length == 1)
         {
-            charInfo.rank.rank_all = rows[0].rank
-            charInfo.rank.rank_word = rows[0].word_rank
-            charInfo.rank.rank_job_all = rows[0].job_rank
-            charInfo.rank.rank_job_word = rows[0].job_word_rank
+            charInfo.rank.rank_all = rows[0].rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.rank.rank_word = rows[0].word_rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.rank.rank_job_all = rows[0].job_rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.rank.rank_job_word = rows[0].job_word_rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+        else {
+            charInfo.rank.rank_all = '-';
+            charInfo.rank.rank_word = '-';
+            charInfo.rank.rank_job_all = '-';
+            charInfo.rank.rank_job_word = '-';
         }
 
         sql = "select * from capston.seed where name = ? order by floor desc, time asc limit 1;"
         var [rows] = await conn.query(sql, params)
         if (rows.length == 1) 
         {
-            charInfo.seed.floor = rows[0].floor
+            charInfo.seed.floor = rows[0].floor.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             charInfo.seed.time = rows[0].time
-            charInfo.seed.rank = rows[0].rank
-            charInfo.seed.rank_word = rows[0].word_rank
+            charInfo.seed.rank = rows[0].rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.seed.rank_word = rows[0].word_rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             charInfo.seed.date = rows[0].date
+        }
+        else {
+            charInfo.seed.floor = '-'
+            charInfo.seed.time = '- 분 - 초'
+            charInfo.seed.rank = '-'
+            charInfo.seed.rank_word = '-'
+            charInfo.seed.date = '-'
         }
 
         
@@ -159,11 +294,18 @@ let getUser = async(username) => {
         var [rows] = await conn.query(sql, params)
         if (rows.length == 1) 
         {
-            charInfo.dojang.floor = rows[0].floor
+            charInfo.dojang.floor = rows[0].floor.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             charInfo.dojang.time = rows[0].time
-            charInfo.dojang.rank = rows[0].rank
-            charInfo.dojang.rank_word = rows[0].word_rank
+            charInfo.dojang.rank = rows[0].rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.dojang.rank_word = rows[0].word_rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             charInfo.dojang.date = rows[0].date
+        }
+        else {
+            charInfo.dojang.floor = '-'
+            charInfo.dojang.time = '- 분 - 초'
+            charInfo.dojang.rank = '-'
+            charInfo.dojang.rank_word = '-'
+            charInfo.dojang.date = '-'
         }
         
         sql = "select * from capston.achievements where name = ? order by idx desc limit 1;"
@@ -171,10 +313,17 @@ let getUser = async(username) => {
         if (rows.length == 1) 
         {
             charInfo.achievements.grade = rows[0].grade
-            charInfo.achievements.points = rows[0].points
-            charInfo.achievements.rank = rows[0].rank
+            charInfo.achievements.points = rows[0].points.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.achievements.rank = rows[0].rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             charInfo.achievements.image = rows[0].img
             charInfo.achievements.date = rows[0].date
+        }
+        else {
+            charInfo.achievements.grade = '-'
+            charInfo.achievements.points = '-'
+            charInfo.achievements.rank = '-'
+            charInfo.achievements.image = '-'
+            charInfo.achievements.date = '-'
         }
         
         sql = "select * from capston.union where name = ? order by idx desc limit 1;"
@@ -182,11 +331,19 @@ let getUser = async(username) => {
         if (rows.length == 1) 
         {
             charInfo.union.grade = rows[0].grade
-            charInfo.union.level = rows[0].level
-            charInfo.union.rank = rows[0].rank
-            charInfo.union.rank_word = rows[0].word_rank
-            charInfo.union.power = rows[0].power
+            charInfo.union.level = rows[0].level.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.union.rank = rows[0].rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.union.rank_word = rows[0].word_rank.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            charInfo.union.power = rows[0].power.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             charInfo.union.date = rows[0].date
+        }
+        else {
+            charInfo.union.grade = '-'
+            charInfo.union.level = '-'
+            charInfo.union.rank = '-'
+            charInfo.union.rank_word = '-'
+            charInfo.union.power = '-'
+            charInfo.union.date = '-'
         }
 
     }
@@ -204,7 +361,7 @@ let insertUser = async(charInfo) => {
     let rows = []
     try {
         let sql = `INSERT INTO capston.user (name, level, job, server, guild, img, date) 
-        VALUES (?, ?, ?, ?, ?, ?, now());`
+        VALUES (?, ?, ?, ?, ?, ?, null);`
         let params = [charInfo.name, charInfo.level, charInfo.job, charInfo.server, charInfo.guild, charInfo.image];
         [rows] = await conn.query(sql, params)
     }

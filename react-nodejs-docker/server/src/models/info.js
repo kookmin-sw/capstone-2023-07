@@ -53,7 +53,9 @@ const ItemOpt = {
     '마력':true,
     '올스탯%':true,
     '몬스터방어력무시%':true,
+    '몬스터방어율무시%':true,
     '보스몬스터공격시데미지%':true,
+    '크리티컬데미지%':true,
     '데미지%':true,
     '캐릭터기준9레벨당STR':true,
     '캐릭터기준9레벨당DEX':true,
@@ -71,7 +73,7 @@ const ItemOpt = {
 
 const ItmeInfo = {
     'title':'',
-    'starForce':'',
+    'starForce':0,
     'part':'',
     'img':'',
     'option': {},
